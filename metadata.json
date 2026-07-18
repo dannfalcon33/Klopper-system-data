@@ -1,0 +1,6 @@
+{
+  "name": "KLOPPER",
+  "description": "Sistema táctico de inteligencia de mercado cripto en tiempo real. Análisis on-chain, movimiento de ballenas, mapas de calor de liquidación y liquidez para BTC, ETH, BNB y SOL con central de comando asistida por IA.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

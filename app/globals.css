@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  --color-legacy-bg: #080C10;
+  --color-legacy-card: #0D131A;
+  --color-legacy-border: #1E293B;
+  --color-legacy-cyan: #03E1FF;
+  --color-legacy-purple: #9945FF;
+  --color-legacy-whale: #FCEE0C;
+  --color-legacy-muted: #847484;
+  --color-legacy-success: #14F195;
+  
+  --font-goldman: var(--font-goldman), 'Goldman', sans-serif;
+  --font-mono: var(--font-mono), 'JetBrains Mono', monospace;
+  
+  --bg-image-legacy-gradient: linear-gradient(135deg, #03E1FF 0%, #9945FF 100%);
+  --bg-image-secure-overlay: radial-gradient(circle at center, transparent 0%, #080C10 80%);
+}
+
+@layer base {
+  body {
+    background-color: #080C10;
+    color: #ffffff;
+    font-family: var(--font-goldman), 'Goldman', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Custom Scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #080C10;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #1E293B;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #03E1FF;
+  }
+}
+
+/* Efecto de líneas de escaneo (Scanlines) */
+body::before {
+  content: " ";
+  display: block;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%),
+              linear-gradient(90deg, rgba(3, 225, 255, 0.02), rgba(153, 69, 255, 0.01), rgba(3, 225, 255, 0.02));
+  z-index: 9999;
+  background-size: 100% 4px, 6px 100%;
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+/* Glowing text and boxes */
+.glow-cyan {
+  box-shadow: 0 0 15px rgba(3, 225, 255, 0.15);
+  border: 1px solid rgba(3, 225, 255, 0.4);
+}
+
+.glow-text-cyan {
+  text-shadow: 0 0 8px rgba(3, 225, 255, 0.6);
+}
+
+.glow-text-purple {
+  text-shadow: 0 0 8px rgba(153, 69, 255, 0.6);
+}
+
+.glow-text-whale {
+  text-shadow: 0 0 8px rgba(252, 238, 12, 0.6);
+}
+
+.glow-text-success {
+  text-shadow: 0 0 8px rgba(20, 241, 149, 0.6);
+}
+
+/* Glitch animation for terminal authenticity */
+@keyframes glitch {
+  0% { transform: translate(0) }
+  20% { transform: translate(-2px, 2px) }
+  40% { transform: translate(-2px, -2px) }
+  60% { transform: translate(2px, 2px) }
+  80% { transform: translate(2px, -2px) }
+  100% { transform: translate(0) }
+}
+
+.animate-terminal-glitch {
+  animation: glitch 1s infinite steps(2);
+  animation-play-state: paused;
+}
+
+.animate-terminal-glitch:hover {
+  animation-play-state: running;
+}
