@@ -152,6 +152,71 @@ const getThemeCss = (color: string) => {
     ::-webkit-scrollbar-thumb:hover {
       background: ${config.primary} !important;
     }
+
+    @keyframes scanline-anim {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(100vh); }
+    }
+    @keyframes flicker-cyber {
+      0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% { opacity: 0.99; filter: hue-rotate(0deg); }
+      20%, 21.999%, 63%, 63.999%, 65%, 69.999% { opacity: 0.7; filter: hue-rotate(15deg); }
+    }
+    @keyframes glow-pulse {
+      0%, 100% { box-shadow: 0 0 15px ${config.glow}; }
+      50% { box-shadow: 0 0 25px ${config.glow.replace("0.35", "0.5")}; }
+    }
+    .cyber-scanlines::after {
+      content: " ";
+      display: block;
+      position: absolute;
+      top: 0; left: 0; bottom: 0; right: 0;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.2) 50%);
+      background-size: 100% 4px;
+      z-index: 10;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .cyber-scanline {
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to bottom, transparent, ${config.primary}, transparent);
+      position: absolute;
+      animation: scanline-anim 8s linear infinite;
+      opacity: 0.15;
+      z-index: 11;
+      pointer-events: none;
+    }
+    .cyber-glitch {
+      animation: flicker-cyber 4s infinite;
+    }
+    .cyber-pulse {
+      animation: glow-pulse 3s infinite;
+    }
+    .cyber-grid-overlay {
+      background-image: 
+        linear-gradient(rgba(20, 241, 149, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(20, 241, 149, 0.02) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .cyber-clip {
+      clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px));
+    }
+    .cyber-button {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.2s ease-in-out;
+    }
+    .cyber-button::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+      transition: all 0.4s ease-in-out;
+    }
+    .cyber-button:hover::before {
+      left: 100%;
+    }
   `;
 };
 
@@ -819,9 +884,13 @@ export default function Home() {
   });
 
   return (
-    <div className="relative min-h-screen flex flex-col selection:bg-legacy-cyan selection:text-black">
+    <div className="relative min-h-screen flex flex-col selection:bg-legacy-cyan selection:text-black bg-[#080c10] cyber-scanlines overflow-hidden">
+      {/* Dynamic Theme Styles Injection & Cyberpunk Animations */}
+      <style dangerouslySetInnerHTML={{ __html: getThemeCss(themeColor) }} />
+      <div className="cyber-scanline"></div>
+
       {/* Upper Status Line */}
-      <header className="border-b border-legacy-border bg-[#0a0f14] px-4 py-2 flex flex-col md:flex-row justify-between items-center text-xs text-legacy-muted font-mono z-20 gap-2">
+      <header className="border-b border-legacy-border bg-[#0a0f14] px-4 py-2 flex flex-col md:flex-row justify-between items-center text-xs text-legacy-muted font-mono z-20 gap-2 relative">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-legacy-success animate-pulse"></span>
@@ -891,26 +960,29 @@ export default function Home() {
                 <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-legacy-cyan"></div>
 
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-legacy-bg border border-legacy-border text-legacy-cyan mb-2 glow-cyan">
-                    <Shield className="w-6 h-6 text-legacy-cyan animate-pulse" />
+                  {/* Cyberpunk Decorative Badge */}
+                  <div className="mb-4 inline-flex items-center gap-1.5 px-3 py-1 bg-legacy-cyan/10 border border-legacy-cyan/30 rounded text-[9px] font-mono tracking-widest text-legacy-cyan uppercase cyber-glitch">
+                    <Terminal className="w-3 h-3 animate-pulse" />
+                    <span>SECURE GATEWAY ESTABLISHED</span>
                   </div>
-                  <h1 className="text-2xl font-bold font-goldman tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-legacy-cyan to-legacy-purple">
-                    SISTEMA PROTEGIDO
+
+                  <h1 className="text-4xl font-extrabold font-goldman tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-legacy-cyan via-white to-legacy-purple relative leading-none select-none">
+                    KLOPPER
                   </h1>
-                  <p className="text-xs text-legacy-muted font-mono mt-1 uppercase">
-                    Klopper Intel - Control de Acceso Local
+                  <p className="text-[10px] text-legacy-muted font-mono mt-2 uppercase tracking-widest leading-relaxed">
+                    SISTEMA CIBERNÉTICO DE INTELIGENCIA DE MERCADO
                   </p>
                   
                   {/* Progress bars indicating current verification level */}
-                  <div className="flex gap-1.5 mt-4 justify-center">
+                  <div className="flex gap-1.5 mt-5 justify-center">
                     {[1, 2, 3, 4].map((step) => (
                       <div 
                         key={step} 
                         className={`h-1.5 rounded transition-all duration-300 ${
                           securityStep > step 
-                            ? "w-8 bg-legacy-success glow-text-success" 
+                            ? "w-8 bg-legacy-success shadow-[0_0_8px_#14f195]" 
                             : securityStep === step 
-                              ? "w-10 bg-legacy-cyan animate-pulse" 
+                              ? "w-10 bg-legacy-cyan animate-pulse shadow-[0_0_12px_var(--color-legacy-cyan)]" 
                               : "w-6 bg-[#16202c]"
                         }`}
                       ></div>
@@ -1195,9 +1267,7 @@ export default function Home() {
             </motion.div>
           ) : (
             /* LEGACY KLOPPER MASTER TACTICAL DASHBOARD W/ SIDEBAR */
-            <div className="flex-1 flex flex-col md:flex-row w-full bg-[#080C10] relative min-h-0">
-              {/* Dynamic Theme Styles Injection */}
-              <style dangerouslySetInnerHTML={{ __html: getThemeCss(themeColor) }} />
+            <div className="flex-1 flex flex-col md:flex-row w-full bg-[#080C10] cyber-grid-overlay relative min-h-0">
 
               {/* COLLAPSIBLE SIDEBAR */}
               <aside 
@@ -1308,7 +1378,11 @@ export default function Home() {
               <section className="xl:col-span-3 flex flex-col gap-4">
                 
                 {/* Panel 1: Símbolo de Selección Cripto */}
-                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col relative">
+                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col relative overflow-hidden group hover:shadow-[0_0_15px_rgba(3,225,255,0.06)] transition-all duration-300">
+                  {/* Cyberpunk corner lines */}
+                  <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-legacy-cyan/60"></div>
+                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-legacy-cyan/60"></div>
+
                   <div className="absolute top-0 right-0 px-2 py-0.5 bg-legacy-border text-legacy-muted text-[9px] uppercase font-mono tracking-wider rounded-bl-lg">
                     Terminal_Selector
                   </div>
@@ -1354,7 +1428,11 @@ export default function Home() {
                 </div>
 
                 {/* Panel 2: Métricas del Activo Seleccionado */}
-                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col space-y-4 relative">
+                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col space-y-4 relative overflow-hidden group hover:shadow-[0_0_15px_rgba(3,225,255,0.06)] transition-all duration-300">
+                  {/* Cyberpunk corner lines */}
+                  <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-legacy-cyan/60"></div>
+                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-legacy-cyan/60"></div>
+
                   <div className="absolute top-0 right-0 px-2 py-0.5 bg-legacy-border text-legacy-muted text-[9px] uppercase font-mono tracking-wider rounded-bl-lg">
                     Realtime_Sensors
                   </div>
@@ -1438,7 +1516,11 @@ export default function Home() {
                 </div>
 
                 {/* Panel 3: Sentimiento Global / Fear & Greed */}
-                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col relative font-mono">
+                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col relative font-mono overflow-hidden group hover:shadow-[0_0_15px_rgba(3,225,255,0.06)] transition-all duration-300">
+                  {/* Cyberpunk corner lines */}
+                  <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-legacy-cyan/60"></div>
+                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-legacy-cyan/60"></div>
+
                   <div className="absolute top-0 right-0 px-2 py-0.5 bg-legacy-border text-legacy-muted text-[9px] uppercase font-mono tracking-wider rounded-bl-lg">
                     Global_Sentiment
                   </div>
@@ -1473,7 +1555,11 @@ export default function Home() {
               <section className="xl:col-span-5 flex flex-col gap-4">
                 
                 {/* Panel 4: Mapa de Calor de Liquidez y Bloques de Orden (Visualizer) */}
-                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col flex-1 relative min-h-[420px]">
+                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col flex-1 relative min-h-[420px] overflow-hidden group hover:shadow-[0_0_15px_rgba(3,225,255,0.06)] transition-all duration-300">
+                  {/* Cyberpunk corner lines */}
+                  <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-legacy-cyan/60"></div>
+                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-legacy-cyan/60"></div>
+
                   <div className="absolute top-0 right-0 px-2 py-0.5 bg-legacy-border text-legacy-muted text-[9px] uppercase font-mono tracking-wider rounded-bl-lg">
                     Liquidity_Heatmap
                   </div>
@@ -1600,7 +1686,11 @@ export default function Home() {
                 </div>
 
                 {/* Panel 5: Logs Operacionales y Consola Local */}
-                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col relative h-[180px] font-mono text-xs">
+                <div className="bg-legacy-card border border-legacy-border p-4 rounded-lg flex flex-col relative h-[180px] font-mono text-xs overflow-hidden group hover:shadow-[0_0_15px_rgba(3,225,255,0.06)] transition-all duration-300">
+                  {/* Cyberpunk corner lines */}
+                  <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-legacy-cyan/60"></div>
+                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-legacy-cyan/60"></div>
+
                   <div className="absolute top-0 right-0 px-2 py-0.5 bg-legacy-border text-legacy-muted text-[9px] uppercase tracking-wider rounded-bl-lg">
                     Console_Auditor
                   </div>
@@ -1622,7 +1712,10 @@ export default function Home() {
               <section className="xl:col-span-4 flex flex-col gap-4">
                 
                 {/* Panel 6: Terminal IA de Inteligencia Asistida */}
-                <div className="bg-legacy-card border border-legacy-border rounded-lg flex flex-col flex-1 relative min-h-[500px]">
+                <div className="bg-legacy-card border border-legacy-border rounded-lg flex flex-col flex-1 relative min-h-[500px] overflow-hidden group hover:shadow-[0_0_15px_rgba(3,225,255,0.06)] transition-all duration-300">
+                  {/* Cyberpunk corner lines */}
+                  <div className="absolute top-0 left-0 w-2.5 h-2.5 border-t-2 border-l-2 border-legacy-cyan/60"></div>
+                  <div className="absolute bottom-0 right-0 w-2.5 h-2.5 border-b-2 border-r-2 border-legacy-cyan/60"></div>
                   
                   {/* Tech Corner Header */}
                   <div className="p-4 border-b border-legacy-border flex justify-between items-center bg-[#0a0f14] rounded-t-lg">
